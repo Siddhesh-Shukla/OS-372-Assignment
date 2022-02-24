@@ -1,101 +1,127 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <pthread.h>
+#include <math.h>
+#include <vector>
+using namespace std;
 
+// // To store parameters for solveSudoku
 // struct fun_params {
 //     int* grid;
 //     int row, col, N;
 //     int* b;
 // };
 
-
-// void PrintTable(int *arr, int n)
+// void PrintTable(int *grid, int n)
 // {
 // 	for (int i = 0; i < n; i++)	{
 // 		for (int j = 0; j < n; j++)
-// 			printf("%d ", *((arr+i*n) + j));
+// 			printf("%d ", *((grid + i*n) + j));
 // 		printf("\n");
 // 	}
 // }
 
 // bool isSafe(int* grid, int row, int col, int num, int n)
 // {
-	
-// 	// Check if we find the same num in the similar row
+
+// 	// Check for same num in the same column
 // 	for (int x = 0; x <= n-1; x++)
-// 		if (*((grid+row*n) + x) == num)
+// 		if (*((grid + x*n) + col) == num)
+// 			return false;
+    
+//     // Check for same num in the same row
+// 	for (int x = 0; x <= n-1; x++)
+// 		if (*((grid + row*n) + x) == num)
 // 			return false;
 
-// 	// Check if we find the same num in the similar column
-// 	for (int x = 0; x <= n-1; x++)
-// 		if (*((grid+x*n) + col) == num)
-// 			return false;
+//     // Check for same num in smaller square
+//     int x = sqrt(n);
+// 	int startRow = row - row%3;
+//     int startCol = col - col%3;
 
-// 	// Check if we find the same num in the particular 3*3 matrix,
-// 	int startRow = row - row % 3, startCol = col - col % 3;
-
-// 	for (int i = 0; i < 3; i++)
-// 		for (int j = 0; j < 3; j++)
-// 			if (*((grid+(i + startRow)*n) + (j+startCol)) == num)
+// 	for (int i = 0; i < x; i++)
+// 		for (int j = 0; j < x; j++)
+// 			if (*((grid + (i+startRow)*n) + (j+startCol)) == num)
 // 				return false;
 
 // 	return true;
 // }
 
+// // multi-threaded sudoku solver
 // void* solveSudoku(void* args)
 // {
 //     struct fun_params* params = (struct fun_params*) args;
+//     int* grid = params->grid, *b = params->b;
+//     int N = params->N;
 
-// 	if (row == params->N-1 && col == params->N)
-// 		params->b = 1;
+// 	if (param->row == N-1 && param->col == N) {
+//         *(param->b) = 1;
+//         PrintTable(grid, N);
+//     }
 
-// 	if (params->col == params->N) {
+// 	if (params->col == N) {
 // 		params->row++;
 // 		params->col = 0;
 // 	}
 
-// 	if (*((grid+params->row*params->N) + params->col) > 0) {
+// 	if (*((grid+params->row*N) + params->col) > 0) {
 //         params->col++;
 //         solveSudoku(args);
 //     }
 //     else {
-//     	for (int num = 1; num <= params->N; num++) {
-//             if (isSafe(params->grid, params->row, params->col, num, params->N)) {
+//         pthread_t* threads = (pthread_t*)malloc(N*sizeof(pthread_t));
+//         int n = 0;
+//     	for (int num = 1; num <= N; num++) {
+//             if (isSafe(grid, params->row, params->col, num, N)) {
                 
-//                 *((params->grid+params->row*params->N) + params->col) = num;
+//                 *((grid+params->row*N) + params->col) = num;
                 
-//                 if(! params->b)
-//                     struct fun_params params = { .grid=params->grid, .row=params->row, .col=params->col, .N=params->N, .b=params->b };
+//                 if(!*(b)) {
+//                     struct fun_params param = { .grid=grid, .row=params->row, .col=params->col, .N=N, .b=b };
+//                     pthread_t thread;
+//                     pthread_create(&thread, NULL, solveSudoku, (void*)&param);
+//                     pthread_join(thread, NULL);
+//                     threads[n++] = thread;
+//                 }
 //             }
         
-//             *((params->grid+params->row*params->N) + params->col) = 0;
+//             *((grid+params->row*N) + params->col) = 0;
 //         }
+
+//         // for(int i=0; i<n; i++) {
+
+//         //     pthread_join(threads[i], NULL);
+//         // }
 //     }
 //     return NULL;
 // }
 
 int main()
 {
-    int N = 9;
-	int grid[N][N] = { { 3, 0, 6, 5, 0, 8, 4, 0, 0 },
-					{ 5, 2, 0, 0, 0, 0, 0, 0, 0 },
-					{ 0, 8, 7, 0, 0, 0, 0, 3, 1 },
-					{ 0, 0, 3, 0, 1, 0, 0, 8, 0 },
-					{ 9, 0, 0, 8, 6, 3, 0, 0, 5 },
-					{ 0, 5, 0, 0, 9, 0, 6, 0, 0 },
-					{ 1, 3, 0, 0, 0, 0, 2, 5, 0 },
-					{ 0, 0, 0, 0, 0, 0, 0, 7, 4 },
-					{ 0, 0, 5, 2, 0, 6, 3, 0, 0 } };
-    int b = 0;
-    // struct fun_params params = { .grid=(int*)grid, .row=0, .col=0, .N=N, .b=&b };
+    FILE *fp = fopen("ip_file.txt", "r");;
+    int size;
+    fscanf(fp, "%d", &size);
+
+    int* grid = (int*)malloc(sizeof(int)*size*size);
+    for (int i = 0; i < size; i++) 
+        for (int j = 0; j < size; j++) {
+            fscanf(fp, "%d", grid+size*i+j);
+    }
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++)
+            printf("%d ", *(grid+size*i+j));
+        printf("\n");
+    }
+
+    // int b = 0;
+    // struct fun_params params = {.grid = (int*)grid, 
+    //                             .row = 0, 
+    //                             .col = 0, 
+    //                             .N = N, 
+    //                             .b = &b };
     // pthread_t thread;
     // pthread_create(&thread, NULL, solveSudoku, (void*)&params);
     // pthread_join(thread, NULL);
 
-    // if(!b)
-	// 	printf("no solution exists \n");
-    // else {
-    //     PrintTable((int*)grid, N);
-    // }
-
-	return 0;
+	// return 0;
 }
