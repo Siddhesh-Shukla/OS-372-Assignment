@@ -15,7 +15,7 @@ void PrintTable(int *grid, int n)
 {
 	for (int i = 0; i < n; i++)	{
 		for (int j = 0; j < n; j++)
-			printf("%d  ", *((grid + i*n) + j));
+			printf("%d\t", *((grid + i*n) + j));
 		printf("\n");
 	}
 }
@@ -51,6 +51,7 @@ int isSafe(int* grid, int row, int col, int num, int n) {
 void* solveSudoku(void* args)
 {
     struct fun_params* params = (struct fun_params*) args;
+    int val = 9;
 
     // printf("%d %d", params->row, params->col);
 
@@ -71,49 +72,67 @@ void* solveSudoku(void* args)
     }
 
     else {
-        pthread_t* threads = (pthread_t*)malloc(sizeof(pthread_t)*params->N);
-        struct fun_params* next_param = (struct fun_params*)malloc(sizeof(struct fun_params)*params->N);
-        int** grid = (int**)malloc(params->N*sizeof(int*));
+        if(params->N > val) {
+            pthread_t* threads = (pthread_t*)malloc(sizeof(pthread_t)*params->N);
+            struct fun_params* next_param = (struct fun_params*)malloc(sizeof(struct fun_params)*params->N);
+            int** grid = (int**)malloc(params->N*sizeof(int*));
 
-        int n = 0;
-    	for (int num = 1; num <= params->N; num++) {
+            int n = 0;
+            for (int num = 1; num <= params->N; num++) {
 
-            // printf("%d %d ", params->row, params->col);
+                // printf("%d %d ", params->row, params->col);
 
-            if (isSafe(params->grid, params->row, params->col, num, params->N)) {
-                
-                *((params->grid+params->row*params->N) + params->col) = num;
-                
-                if(!*(params->b)) {
+                if (isSafe(params->grid, params->row, params->col, num, params->N)) {
+                    
+                    *((params->grid+params->row*params->N) + params->col) = num;
+                    
+                    if(!*(params->b)) {
 
-                    grid[n] = (int*)malloc(params->N*params->N*sizeof(int));
-                    for(int i=0; i<params->N*params->N; i++) {
-                        grid[n][i] = *(params->grid+i);
+                        grid[n] = (int*)malloc(params->N*params->N*sizeof(int));
+                        for(int i=0; i<params->N*params->N; i++) {
+                            grid[n][i] = *(params->grid+i);
+                        }
+                        
+                        next_param[n].grid=grid[n]; 
+                        next_param[n].row=params->row; 
+                        next_param[n].col=params->col; 
+                        next_param[n].N=params->N; 
+                        next_param[n].b=params->b;
+                        
+                        pthread_create(&threads[n], NULL, solveSudoku, (void*)&next_param[n]);
+                        n++;
                     }
-                    
-                    next_param[n].grid=grid[n]; 
-                    next_param[n].row=params->row; 
-                    next_param[n].col=params->col; 
-                    next_param[n].N=params->N; 
-                    next_param[n].b=params->b;
-                    
-                    pthread_create(&threads[n], NULL, solveSudoku, (void*)&next_param[n]);
-                    // pthread_join(threads[n], NULL);
-                    n++;
                 }
             }
-        }
 
-        for(int i=0; i<n; i++) {
-            pthread_join(threads[i], NULL);
-        }
+            for(int i=0; i<n; i++) {
+                pthread_join(threads[i], NULL);
+            }
 
-        for(int i=0; i<n; i++) {
-            free(grid[i]);
+            for(int i=0; i<n; i++) {
+                free(grid[i]);
+            }
+            free(grid);
+            free(threads);
+            free(next_param);
         }
-        free(grid);
-        free(threads);
-        free(next_param);
+        else {
+    	    for (int num = 1; num <= params->N; num++) {
+                if (isSafe(params->grid, params->row, params->col, num, params->N)) {
+                
+                    *((params->grid+params->row*params->N) + params->col) = num;
+                
+                    if(!*(params->b)) {
+                        struct fun_params param = { .grid=params->grid, .row=params->row, .col=params->col, .N=params->N, .b=params->b };
+                        pthread_t thread;
+                        pthread_create(&thread, NULL, solveSudoku, (void*)&param);
+                        pthread_join(thread, NULL);
+                    }
+                }
+        
+            *((params->grid+params->row*params->N) + params->col) = 0;
+            } 
+        }
     }
 
     return NULL;
@@ -130,8 +149,8 @@ int main(int argc, char *argv[])
             fscanf(fp, "%d", grid+size*i+j);
     }
 
-    PrintTable(grid, size);
-    printf("\n");
+    // PrintTable(grid, size);
+    // printf("\n");
 
     int b = 0;
     struct fun_params* params = (struct fun_params*)malloc(sizeof(struct fun_params));
