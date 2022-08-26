@@ -4,8 +4,10 @@
 #include <math.h>
 #include <string.h>
 
+
 int no_of_threads = 0;
 # define MAX_THREADS 500
+
 
 // To store parameters for solveSudoku
 struct fun_params {
@@ -13,7 +15,8 @@ struct fun_params {
     int row, col, N;
     int* b;
 };
-    
+
+
 // To print sudoku
 void print_grid(int grid[36][36], int n)
 {
@@ -23,6 +26,7 @@ void print_grid(int grid[36][36], int n)
         printf("\n");
     }
 }
+
 
 int isSafe(int grid[36][36], int row, int col, int num, int n) {
 
@@ -48,6 +52,7 @@ int isSafe(int grid[36][36], int row, int col, int num, int n) {
 
 	return 1;
 }
+
 
 // multi-threaded sudoku solver
 void* solveSudoku(void* args)
@@ -129,6 +134,7 @@ void* solveSudoku(void* args)
     return NULL;
 }
 
+
 // read file
 void read_grid_from_file(int size, char *ip_file, int grid[36][36]) {
 	FILE *fp;
@@ -139,7 +145,8 @@ void read_grid_from_file(int size, char *ip_file, int grid[36][36]) {
             fscanf(fp, "%d", &grid[i][j]);
     }
 } 
-    
+
+
 int main(int argc, char *argv[])
 {
     if (argc != 3) {
