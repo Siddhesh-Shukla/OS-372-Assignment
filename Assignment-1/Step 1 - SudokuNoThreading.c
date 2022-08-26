@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+
 void PrintTable(int *arr, int n)
 {
 	for (int i = 0; i < n; i++)	{
@@ -8,6 +9,7 @@ void PrintTable(int *arr, int n)
 		printf("\n");
 	}
 }
+
 
 bool isSafe(int* grid, int row, int col, int num, int n)
 {
@@ -32,6 +34,7 @@ bool isSafe(int* grid, int row, int col, int num, int n)
 
 	return true;
 }
+
 
 bool solveSudoku(int* grid, int row, int col, int n)
 {
@@ -60,6 +63,7 @@ bool solveSudoku(int* grid, int row, int col, int n)
 	}
 	return false;
 }
+
 
 int main()
 {
