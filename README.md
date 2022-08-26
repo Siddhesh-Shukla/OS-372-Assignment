@@ -1,4 +1,4 @@
-# OS-372-Assignment
+# OS-Assignment
 
 ## OS-Assignment-1 (Sudoku Solver Using Threads)
 
