@@ -3,12 +3,14 @@
 #include <pthread.h>
 #include <math.h>
 
+
 // To store parameters for solveSudoku
 struct fun_params {
     int* grid;
     int row, col, N;
     int* b;
 };
+
 
 // To print sudoku
 void PrintTable(int *grid, int n)
@@ -23,7 +25,7 @@ void PrintTable(int *grid, int n)
 
 int isSafe(int* grid, int row, int col, int num, int n) {
 
-	// Check for same num in the same column
+     // Check for same num in the same column
 	for (int x = 0; x <= n-1; x++)
 		if (*((grid + x*n) + col) == num)
 			return 0;
@@ -162,6 +164,6 @@ int main(int argc, char *argv[])
     pthread_t thread;
     pthread_create(&thread, NULL, solveSudoku, (void*)params);
     pthread_join(thread, NULL);
-
+	
 	return 0;
 }
