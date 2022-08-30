@@ -17,7 +17,7 @@
     - <https://drive.google.com/file/d/15rSuXJbEtJroHia0D1tNQVz8L-kkxN6O/view?usp=sharing> 
     - <https://drive.google.com/file/d/1592QBBbA1x_E5p8lxZk7hjtx_spfXyF3/view?usp=sharing> 
 
-## OS-Assignment-2 (---)
+## OS-Assignment-2
 Problem Statements:
 - Write a multi-threaded C program (P1) that reads a file containing space-separated positive integers in `ASCII` format. The number of integers can be arbitrarily large (upto `1 million integers`). The name of the file and the number of integers in the file will be supplied in the command line.
     - Different threads should read different parts of the file. Vary the `number of threads` from `1… to arbitrarily large`
